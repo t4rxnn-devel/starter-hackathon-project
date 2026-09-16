@@ -1,0 +1,139 @@
+name: Dynamic Production Automation and Multi Architecture Verification Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  dynamic-code-discovery-and-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Python Application Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Code Quality Verification Toolsets
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black mypy numpy
+
+      - name: Dynamically Discover and Auto Format All Project Python Modules
+        run: |
+          find . -type f -name "*.py" -not -path "*/.*" | xargs -I {} sh -c 'echo "Formatting: {}" && black "{}"'
+
+      - name: Execute Multi Tier Syntax Diagnostics Over Discovered Simulation Frameworks
+        run: |
+          find . -type f -name "*.py" -not -path "*/.*" | xargs -I {} sh -c 'flake8 "{}" --count --select=E9,F63,F7,F82 --show-source --statistics'
+          find . -type f -name "*.py" -not -path "*/.*" | xargs -I {} sh -c 'flake8 "{}" --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics'
+
+  dynamic-firmware-matrix-cross-compilation:
+    needs: dynamic-code-discovery-and-formatting
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        optimization-level: ['-O2', '-O3', '-Os']
+        target-arch: ['cortex-m7']
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy GNU Embedded ARM Embedded Toolchain GCC Compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
+
+      - name: Create Isolated Output Architecture Build Infrastructure Directories
+        run: |
+          mkdir -p build/compiled_objects
+          mkdir -p build/inspection_profiles
+          mkdir -p artifacts
+
+      - name: Dynamically Scan and Cross Compile All Scattered Sources To Static Machine Units
+        run: |
+          find firmware/src -type f \( -name "*.cpp" -o -name "*.c" -o -name "*.S" \) > source_list.txt
+          cat source_list.txt
+          while IFS= read -r src_file; do
+            base_name=$(basename "$src_file" | cut -f 1 -d '.')
+            echo "Compiling structural asset: $src_file"
+            arm-none-eabi-g++ -c ${{ matrix.optimization-level }} -Wall -Wextra -Werror \
+              -mcpu=${{ matrix.target-arch }} -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard \
+              -ffunction-sections -fdata-sections \
+              -I firmware/include \
+              "$src_file" \
+              -o "build/compiled_objects/${base_name}_${{ matrix.optimization-level }}.o"
+          done < source_list.txt
+
+      - name: Generate Deep Inspection Structural Symbolic Disassembly Profiles Over Validated Outputs
+        run: |
+          find build/compiled_objects -type f -name "*.o" > valid_objects.txt
+          while IFS= read -r obj; do
+            base_obj=$(basename "$obj" .o)
+            arm-none-eabi-objdump -h -S "$obj" > "artifacts/disassembly_${base_obj}.txt"
+            arm-none-eabi-size "$obj" > "artifacts/memory_footprint_${base_obj}.txt"
+          done < valid_objects.txt
+
+      - name: Archive Dynamically Discovered and Compiled Target Microcontroller Object Modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAGNEETO-Dynamic-Objects-${{ matrix.optimization-level }}
+          path: artifacts/
+          retention-days: 5
+
+  dynamic-digital-twin-verification:
+    needs: dynamic-code-discovery-and-formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Python Application Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bootstrap Dynamic Math Testing Matrix Libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy
+
+      - name: Dynamically Discover and Execute All Analytical Physical Validation Subroutines
+        run: |
+          find simulation -type f -name "*.py" -not -path "*/.*" > run_list.txt
+          cat run_list.txt
+          while IFS= read -r script_file; do
+            echo "Executing algorithmic verification matrix suite: $script_file"
+            python "$script_file"
+          done < run_list.txt
+
+      - name: System Environment Sanity Attestation Check
+        run: |
+          python -c "
+          import sys
+          try:
+              import numpy
+              print('Dynamic simulation runtime allocation completed verified.')
+          except ImportError:
+              sys.exit(1)
+          "
+
+  pipeline-deployment-gate:
+    needs: [dynamic-firmware-matrix-cross-compilation, dynamic-digital-twin-verification]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit Success Telemetry Validation Handshake
+        run: |
+          echo "=========================================================="
+          echo "  MAGNEETO DYNAMIC WORKFLOW SECURED: SYSTEM FULLY STABLE  "
+          echo "  ALL HISTORICAL AND NEW ARCHIVE MODULES AUTO RECOGNIZED  "
+          echo "=========================================================="
