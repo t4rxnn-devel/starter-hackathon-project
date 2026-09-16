@@ -28,3 +28,68 @@ We want to distribute MAGNEETO as a plug-and-play open-source template for globa
 ## AI Use Disclosure
 * **How AI was used:** AI assisted in organizing the layout of the Markdown submission documentation and formatting the LaTeX equations.
 * **Where human review remains:** The underlying core physics, the Homotopy Perturbation Method derivations, and the bare-metal ARM assembly logic were independently researched and authored by the human builder to ensure absolute mathematical precision.
+
+## ⚙️ Prototype Setup & Execution Guide
+
+### 📋 Prerequisites
+The following dependencies must be present on your local workstation or the automation runner environment prior to executing the compilation and verification loops:
+
+| Tool | Minimum Version | Verification Command | Official Installer Reference |
+| :--- | :--- | :--- | :--- |
+| **GNU Embedded Toolchain** | `10.3+` | `arm-none-eabi-g++ --version` | https://arm.com |
+| **Python Ecosystem** | `3.11+` | `python --version` | https://python.org |
+| **GNU Make System** | `4.2+` | `make --version` | https://gnu.org |
+
+### 1️⃣ Clone the Repository Structure
+```bash
+git clone https://github.com
+cd magneeto
+```
+
+### 2️⃣ Execute Automated Bare-Metal Firmware Compilation
+To cross-compile the low-level C++ source files and ARM assembly bootstrap elements into flashable target hardware architectures, execute the root automation file:
+```bash
+make check-cross-compiler
+make validate-tree
+make all
+```
+*Expected Outputs inside the generated `/build` directory:*
+*   `magneeto.elf` (Executable and Linkable Format binary image)
+*   `magneeto.bin` (Raw binary instruction block for structural flash memory)
+*   `magneeto.hex` (Intel Hexadecimal formatted file distribution)
+*   `magneeto.lst` (Symbolic disassembly machine inspection assembly profile)
+
+### 3️⃣ Run the Mathematical Digital Twin Verification Engine
+Execute the high-fidelity computational simulation testbench to evaluate the non-linear Homotopy Perturbation Method (HPM) matrix values against your historical dataset targets:
+```bash
+python -m pip install numpy
+python simulation/run_mhd_testbench.py
+```
+
+### 4️⃣ Verification & 30-Second Evaluation Walkthrough
+To verify code-to-math convergence immediately without access to physical NXP i.MX RT1062 silicone boards:
+1. Open your terminal window and fire up the Python verification routine (`python simulation/run_mhd_testbench.py`).
+2. Observe the runtime logs generating an analytical numerical evaluation across `20V`, `60V`, `120V`, `200V`, and `500V` surge states.
+3. Cross-reference the on-screen output values against the analytical findings: verify that at `500V`, the non-linear analytical clamping framework achieves an exact **72.0x enhancement ratio** relative to standard linear models [pdf_wGTd9z.pdf].
+4. Access the GitHub Actions workflow tab inside your repository to view the multi-tier validation artifacts and memory footprint size listings generated automatically on the cloud runner.
+
+### 🧠 Structural System Architecture & Information Pipeline
+```text
+  [ Catastrophic 500V Surge Target ]
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│     firmware/src/startup.S      │ ◄── Handles hardware stack allocation and clear-BSS vectors
+└────────────────┬────────────────┘
+                 │ (Jump to Main)
+                 ▼
+┌─────────────────────────────────┐
+│      firmware/src/main.cpp      │ ◄── Runs deterministic 1000Hz fixed-interval loop execution
+└──────┬───────────────────┬──────┘
+       │                   │
+       │ (Multi-ADC read)  │ (Deploy Lorentz PWM Gate)
+       ▼                   ▼
+┌─────────────────────────────────┐
+│  firmware/include/plasma_math.h │ ◄── Resolves the non-linear closed-form HPM equations
+└─────────────────────────────────┘
+```
